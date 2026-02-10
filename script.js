@@ -209,6 +209,25 @@ function displayResult(className, probability) {
 
     categoryName.innerText = className;
 
+    // Display Fun Fact
+    const funFactElement = document.getElementById('funFact');
+    // Basic fun facts database
+    const facts = [
+        "Recycling one aluminum can saves enough energy to run a TV for 3 hours!",
+        "Plastic bottles take 450 years to decompose in a landfill.",
+        "Glass is 100% recyclable and can be recycled endlessly without loss in quality.",
+        "Composting organic waste reduces methane emissions from landfills.",
+        "Up to 60% of the rubbish that ends up in the dustbin could be recycled.",
+        "The energy saved from recycling one glass bottle can power a light bulb for 4 hours.",
+        "Cardboard boxes can be recycled at least 7 times.",
+        "Every ton of recycled paper saves 17 trees and 7,000 gallons of water."
+    ];
+
+    if (funFactElement) {
+        const randomFact = facts[Math.floor(Math.random() * facts.length)];
+        funFactElement.innerText = randomFact;
+    }
+
     // Map content based on class name (Case Insensitive)
     const lowerClass = className.toLowerCase();
     const content = getContentForClass(lowerClass);
