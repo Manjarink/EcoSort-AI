@@ -1,7 +1,3 @@
-// Vercel Serverless Function for AI Waste Classification
-// This function receives an image, uses Google Gemini Vision API to identify the object,
-// then applies rule-based classification to determine waste category
-
 export default async function handler(req, res) {
     // Enable CORS for development
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -29,56 +25,55 @@ export default async function handler(req, res) {
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
+            console.error('API Key missing in environment variables');
             return res.status(500).json({
-                error: 'API key not configured. Please add GEMINI_API_KEY to environment variables.'
+                error: 'Server configuration error: API key missing.'
             });
         }
 
         // Remove data URL prefix to get base64 string
         const base64Image = image.replace(/^data:image\/(png|jpg|jpeg|webp);base64,/, '');
 
-        // Call Gemini Vision API (trying v1 endpoint)
-        const geminiResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            {
-                                text: "Identify this waste item in 1-3 words. Just name the object, nothing else. Examples: 'plastic bottle', 'banana peel', 'battery', 'newspaper'."
-                            },
-                            {
-                                inline_data: {
-                                    mime_type: "image/jpeg",
-                                    data: base64Image
-                                }
+        // Call Gemini Vision API
+        // Using v1beta and gemini-1.5-flash which is the standard free tier model
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+        console.log('Calling Gemini API...');
+
+        const geminiResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        {
+                            text: "Identify this waste item in 1-3 words. Just name the object, nothing else. Examples: 'plastic bottle', 'banana peel', 'battery', 'newspaper'."
+                        },
+                        {
+                            inline_data: {
+                                mime_type: "image/jpeg",
+                                data: base64Image
                             }
-                        ]
-                    }],
-                    generationConfig: {
-                        temperature: 0.4,
-                        maxOutputTokens: 50
-                    }
-                })
-            }
-        );
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    temperature: 0.4,
+                    maxOutputTokens: 50
+                }
+            })
+        });
 
         if (!geminiResponse.ok) {
-            // Log detailed error for debugging
             const errorText = await geminiResponse.text();
-            console.error('Gemini API Error Details:', {
-                status: geminiResponse.status,
-                statusText: geminiResponse.statusText,
-                body: errorText
-            });
+            console.error('Gemini API Error:', geminiResponse.status, errorText);
             throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorText}`);
         }
 
         const geminiData = await geminiResponse.json();
+        console.log('Gemini success:', JSON.stringify(geminiData).substring(0, 100) + '...');
 
         // Extract identified object
         const identifiedObject = geminiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase() || 'unknown item';
