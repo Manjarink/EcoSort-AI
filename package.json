@@ -1,0 +1,9 @@
+{
+    "name": "ecosort-ai",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "AI-powered waste segregation assistant for SDG 12",
+    "scripts": {
+        "start": "npx serve ."
+    }
+}
