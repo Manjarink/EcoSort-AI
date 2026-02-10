@@ -45,11 +45,66 @@ const previewSection = document.getElementById('previewSection');
 const resultsSection = document.getElementById('resultsSection');
 const loadingSection = document.getElementById('loadingSection');
 const analyzeBtn = document.getElementById('analyzeBtn');
+const cameraBtn = document.getElementById('cameraBtn');
+const cameraVideo = document.getElementById('cameraVideo');
+const cameraCanvas = document.getElementById('cameraCanvas');
 
 // Trigger file input when clicking upload button
 if (uploadBtn) {
     uploadBtn.addEventListener('click', () => {
         if (fileInput) fileInput.click();
+    });
+}
+
+// Toggle Camera
+if (cameraBtn) {
+    cameraBtn.addEventListener('click', async () => {
+        // If video is already playing, capture image
+        if (cameraVideo.style.display === 'block') {
+            const context = cameraCanvas.getContext('2d');
+            cameraCanvas.width = cameraVideo.videoWidth;
+            cameraCanvas.height = cameraVideo.videoHeight;
+            context.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+
+            // Stop stream
+            const stream = cameraVideo.srcObject;
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+            cameraVideo.srcObject = null;
+
+            // Show preview
+            imagePreview.src = cameraCanvas.toDataURL('image/jpeg');
+            cameraVideo.style.display = 'none';
+            previewSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            imagePreview.dataset.loaded = "true";
+
+            cameraBtn.innerHTML = '<span class="btn-icon">📷</span> Use Camera';
+            if (uploadBtn) uploadBtn.style.display = 'inline-flex';
+
+        } else {
+            // Start Camera
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraVideo.srcObject = stream;
+                cameraVideo.style.display = 'block';
+                cameraVideo.play();
+
+                // Hide other UI
+                imagePreview.style.display = 'none';
+                previewSection.classList.add('hidden');
+                resultsSection.classList.add('hidden');
+                if (uploadBtn) uploadBtn.style.display = 'none';
+
+                cameraBtn.innerHTML = '<span class="btn-icon">📸</span> Capture Photo';
+
+            } catch (err) {
+                console.error("Camera Error:", err);
+                alert("Could not access camera. Please allow camera permissions.");
+            }
+        }
     });
 }
 
@@ -159,54 +214,27 @@ function displayResult(className, probability) {
         awarenessMessage.innerText = content.message;
     }
 
-    const alternativesList = document.getElementById('alternativesList');
-    if (alternativesList) {
-        alternativesList.innerHTML = ""; // Clear old items
-        content.tips.forEach(tip => {
-            const li = document.createElement('li');
-            li.innerText = tip;
-            alternativesList.appendChild(li);
-        });
-    }
+
 }
 
 // Rich Content Database
 function getContentForClass(className) {
     // Default content
     let content = {
-        message: "Please dispose of this item responsibly according to local guidelines.",
-        tips: ["Check local recycling rules", "Reduce waste where possible"]
+        message: "Please dispose of this item responsibly according to local guidelines."
     };
 
     if (className.includes("recyclable") || className.includes("plastic") || className.includes("paper") || className.includes("cardboard")) {
         content = {
-            message: "♻️ This item is Recyclable! Recycling saves energy and resources.",
-            tips: [
-                "Rinse containers before binning",
-                "Flatten cardboard boxes",
-                "Check for the recycling symbol number",
-                "Remove caps if required"
-            ]
+            message: "♻️ This item is Recyclable! Recycling saves energy and resources."
         };
     } else if (className.includes("organic") || className.includes("food") || className.includes("peel") || className.includes("fruit")) {
         content = {
-            message: "🌱 This is Organic waste. It can be composted to create nutrient-rich soil!",
-            tips: [
-                "Compost at home or use community bins",
-                "Avoid mixing with plastic",
-                "Great for garden fertilizer",
-                "Reduces landfill methane emissions"
-            ]
+            message: "🌱 This is Organic waste. It can be composted to create nutrient-rich soil!"
         };
     } else if (className.includes("hazardous") || className.includes("battery") || className.includes("e-waste") || className.includes("bulb")) {
         content = {
-            message: "⚠️ Warning: Hazardous Waste! Do NOT throw in regular trash.",
-            tips: [
-                "Take to special e-waste collection centers",
-                "Batteries cause fires in landfills",
-                "Check supermarket collection points",
-                "Keep separate from other waste"
-            ]
+            message: "⚠️ Warning: Hazardous Waste! Do NOT throw in regular trash."
         };
     }
 
