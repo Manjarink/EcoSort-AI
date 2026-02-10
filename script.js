@@ -42,12 +42,19 @@ const fileInput = document.getElementById('fileInput');
 const uploadBtn = document.getElementById('uploadBtn');
 const imagePreview = document.getElementById('imagePreview');
 const previewSection = document.getElementById('previewSection');
-const resultsSection = document.getElementById('resultsSection');
-const loadingSection = document.getElementById('loadingSection');
-const analyzeBtn = document.getElementById('analyzeBtn');
 const cameraBtn = document.getElementById('cameraBtn');
 const cameraVideo = document.getElementById('cameraVideo');
 const cameraCanvas = document.getElementById('cameraCanvas');
+const retakeBtn = document.getElementById('retakeBtn');
+const sortAnotherBtn = document.getElementById('sortAnotherBtn');
+
+// Reset Function
+function resetApp() {
+    window.location.reload();
+}
+
+if (retakeBtn) retakeBtn.addEventListener('click', resetApp);
+if (sortAnotherBtn) sortAnotherBtn.addEventListener('click', resetApp);
 
 // Trigger file input when clicking upload button
 if (uploadBtn) {
