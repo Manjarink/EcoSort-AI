@@ -37,9 +37,9 @@ export default async function handler(req, res) {
         // Remove data URL prefix to get base64 string
         const base64Image = image.replace(/^data:image\/(png|jpg|jpeg|webp);base64,/, '');
 
-        // Call Gemini Vision API
+        // Call Gemini Vision API (trying v1 endpoint)
         const geminiResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: {
@@ -68,7 +68,14 @@ export default async function handler(req, res) {
         );
 
         if (!geminiResponse.ok) {
-            throw new Error(`Gemini API error: ${geminiResponse.status}`);
+            // Log detailed error for debugging
+            const errorText = await geminiResponse.text();
+            console.error('Gemini API Error Details:', {
+                status: geminiResponse.status,
+                statusText: geminiResponse.statusText,
+                body: errorText
+            });
+            throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorText}`);
         }
 
         const geminiData = await geminiResponse.json();
