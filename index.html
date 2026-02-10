@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSort AI - Smart Waste Segregation</title>
+    <meta name="description" content="AI-powered waste classification assistant for responsible consumption (SDG 12)">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Background animated elements -->
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🌱</span>
+                <h1>EcoSort AI</h1>
+            </div>
+            <p class="tagline">Sort smarter, waste better, protect our planet</p>
+        </header>
+
+        <!-- Stats Counter -->
+        <div class="stats-card" id="statsCard">
+            <div class="stat-item">
+                <span class="stat-number" id="itemCount">0</span>
+                <span class="stat-label">Items Sorted</span>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <main class="main-card">
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-icon">📸</div>
+                <h2>Identify Your Waste</h2>
+                <p>Take a photo or upload an image to classify your waste item</p>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="cameraBtn">
+                        <span class="btn-icon">📷</span>
+                        Use Camera
+                    </button>
+                    <button class="btn btn-secondary" id="uploadBtn">
+                        <span class="btn-icon">🖼️</span>
+                        Upload Image
+                    </button>
+                </div>
+
+                <!-- Hidden file input -->
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                
+                <!-- Hidden video for camera -->
+                <video id="cameraVideo" style="display: none;" autoplay playsinline></video>
+                <canvas id="cameraCanvas" style="display: none;"></canvas>
+            </section>
+
+            <!-- Preview Section -->
+            <section class="preview-section hidden" id="previewSection">
+                <h3>Image Preview</h3>
+                <div class="image-preview-container">
+                    <img id="imagePreview" alt="Uploaded waste item">
+                </div>
+                <button class="btn btn-primary btn-full" id="analyzeBtn">
+                    <span class="btn-icon">🔍</span>
+                    Analyze Waste
+                </button>
+                <button class="btn btn-text" id="retakeBtn">
+                    <span>↻</span> Try Another Image
+                </button>
+            </section>
+
+            <!-- Loading Section -->
+            <section class="loading-section hidden" id="loadingSection">
+                <div class="loader"></div>
+                <p>AI is analyzing your waste item...</p>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section hidden" id="resultsSection">
+                <div class="results-header">
+                    <h3>Classification Results</h3>
+                    <div class="identified-object">
+                        <span class="label">Identified:</span>
+                        <span class="object-name" id="objectName">-</span>
+                    </div>
+                </div>
+
+                <!-- Category Card -->
+                <div class="category-card" id="categoryCard">
+                    <div class="category-icon" id="categoryIcon">♻️</div>
+                    <h4 class="category-name" id="categoryName">-</h4>
+                    <div class="awareness-message" id="awarenessMessage">
+                        <p></p>
+                    </div>
+                </div>
+
+                <!-- Alternatives Section -->
+                <div class="alternatives-card" id="alternativesCard">
+                    <h4>💡 Better Alternatives</h4>
+                    <ul id="alternativesList"></ul>
+                </div>
+
+                <!-- Fun Fact -->
+                <div class="fun-fact-card">
+                    <div class="fun-fact-header">
+                        <span class="fun-fact-icon">🌍</span>
+                        <h4>Did You Know?</h4>
+                    </div>
+                    <p id="funFact">-</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="sortAnotherBtn">
+                        <span class="btn-icon">🔄</span>
+                        Sort Another Item
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>🌿 Supporting SDG 12: Responsible Consumption & Production</p>
+            <p class="footer-small">Powered by Google Gemini AI</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
